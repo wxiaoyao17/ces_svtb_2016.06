@@ -58,6 +58,8 @@ module router_test_top;
     //$fsdbDumpvars;
     //ToDo
     $fsdbDumpvars;
+    // $fsdbDumpvars(0, "+mda");
+    // $fsdbDumpfile("test.fsdb");
   end
 
   always begin

@@ -1,5 +1,7 @@
-csrc
-simv.daidir
+# csrc
+# DVEfiles
+# simv.daidir
+# verdiLog
 
 *
 !.gitignore
