@@ -1,0 +1,9 @@
+csrc
+simv.daidir
+
+*
+!.gitignore
+!Makefile
+!router_io.sv
+!router_test_top.sv
+!test.sv

@@ -14,6 +14,17 @@ interface router_io(input bit clock);
   //Add all signals required to connect test program to the DUT
   //All directions must be with respect to test program
   //ToDo
+  clocking cb @(posedge clock);
+    default input #1ns output #1ns;
+    output reset_n;
+    output din;         // no bit reference
+    output frame_n;     // no bit reference
+    output valid_n;     // no bit reference
+    input  dout;        // no bit reference
+    input  valido_n;    // no bit reference
+    input  busy_n;      // no bit reference
+    input  frameo_n;    // no bit reference
+  endclocking: cb
 
     //Lab 1 - Task 2, Step 4
     //
@@ -25,5 +36,6 @@ interface router_io(input bit clock);
   //Create a modport to connect to test program
   //Arguments should list clocking block and all other potential asynch signals
   //ToDo
+  modport TB (clocking cb, output reset_n);
 
 endinterface: router_io

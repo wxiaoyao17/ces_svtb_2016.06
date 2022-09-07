@@ -2,6 +2,7 @@
 //
 //Add `timescale
 //ToDo
+`timescale 1ns/100ps
 
 module router_test_top;
   parameter simulation_cycle = 100;
@@ -12,12 +13,14 @@ module router_test_top;
   //
   //Add an interface instance
   //ToDo
+  router_io top_io(SystemClock); // instantiate interface
   
   //Lab 1 - Task 4, Step 4
   //
   //Instantiate the test program
   //Make I/O connection via interface
   //ToDo
+  test t(top_io); // add program
 
   router dut(
     //Lab 1 - Task 4, Step 5
@@ -25,15 +28,15 @@ module router_test_top;
     //Modify DUT connection to connect via interface
     //ToDo
 
-    .reset_n	(reset_n),
-    .clock		(clock),
-    .din		(din),
-    .frame_n	(frame_n),
-    .valid_n	(valid_n),
-    .dout		(dout),
-    .valido_n	(valido_n),
-    .busy_n		(busy_n),
-    .frameo_n	(frameo_n)
+    .reset_n	(top_io.reset_n),
+    .clock		(top_io.clock),
+    .din		  (top_io.din),
+    .frame_n	(top_io.frame_n),
+    .valid_n	(top_io.valid_n),
+    .dout		  (top_io.dout),
+    .valido_n	(top_io.valido_n),
+    .busy_n		(top_io.busy_n),
+    .frameo_n	(top_io.frameo_n)
   );
 
   initial begin
@@ -41,6 +44,7 @@ module router_test_top;
     //
     //Add $timeformat
     //ToDo
+    $timeformat(-9, 1, "ns", 10);
 
 	//Arguments of $timeformat explained:
 	//unit_number: the power of 10 for unit of time to use.
@@ -53,7 +57,7 @@ module router_test_top;
     //(Optional) If you wish to use Verdi for viewing Waveforms add
     //$fsdbDumpvars;
     //ToDo
-
+    $fsdbDumpvars;
   end
 
   always begin
