@@ -1,0 +1,120 @@
+Synopsys
+Customer Education Services
+======================================================================
+SystemVerilog Testbench
+Lab Notes Rev 2016.06
+Last Update: 2016-08-01
+======================================================================
+
+
+These Instructions are intended to help you with the installation of 
+the tools needed to successfully run the labs, and with the installation 
+of the lab database itself.
+
+CONTENTS
+================================
+
+1. Software installation
+2. Lab database installation
+3. Lab database configuration and testing
+
+
+**********************************************************************
+1. Software installation
+======================================================================
+
+This workshop needs the following tool(s) to be installed:
+
+- VCS  L-2016.06
+- VERDI Verdi3_L-2016.06
+
+
+To download the required software release, you have to access
+the Solvnet Release Library:
+
+1. Navigate your browser to http://solvnet.synopsys.com
+
+2. Log in using your solvnet id and password
+   If you are not registered, follow the directions on this 
+   page to sign up for solvnet
+
+3. Select "Release Library" under the heading "Software and Installation"
+
+4. Use the drop-down menus to select the correct software
+
+5. Follow the instructions to download and install the software on 
+   your workstation
+
+
+**********************************************************************
+2. Lab database Installation
+======================================================================
+
+Execute the following command to unpack the archive:
+
+        unix$  gtar xzf ces_svtb_2016.06.tar.gz
+
+Note:  Archives were created using GNU tar.
+
+Multiple account installation:
+Since the lab directory structure may contain symbolic links that 
+should be preserved instead of being expanded, it is strongly 
+recommended that you untar the file directly into each account.
+Repeat the following for every user account:
+
+unix$ cd /path/to/user/account1
+unix$ gtar xzf /path/to/ces_svtb_2016.06.tar.gz
+
+
+**********************************************************************
+3. Lab database configuration and testing
+======================================================================
+
+Testing
+==============================
+
+To verify the functionality of the lab files, it is recommended that
+you run the supplied test script (the current directory has to be
+the "ces_svtb_2015.09" directory):
+
+
+        unix$  ./.testscript
+
+
+This will run a series of tests to verify that all files exist, and that
+the tool can be invoked.
+
+If everything is ok, you should see output similar to:
+
+
+------------------------------------------------------------
+ 
+  ******************************************************
+ Running the Synopsys Workshop Installation Test Script
+ 
+       Course Name:    SVTB
+       VCS Version:    2016.06
+       Verdi Version:  Verdi3_L-2016.06
+       Last Update:    2016-08-01
+ ******************************************************
+
+ Running  Test 1 - installation integrity check
+ Running  Tests 2a,b,c - availability of VCS executables
+ Running  Test 2d - availability of verdi executables
+ Running  Test 3a - vcs invocation test
+ Running  Test 3b - verdi invocation test
+ Running  Test 4 - vcs SystemVerilog simulation test
+ Skipping Test 5 - GUI (dve)
+
+ Installation Test PASSED for SVTB Course
+
+
+------------------------------------------------------------
+
+Note:
+By default, the GUI (dve) test is skipped.
+To include the GUI test, edit the file ".testscript" and change the
+variable $test_vcs_gui to "1" at the top of the file. 
+Rerun the test after that.
+Make sure that you have the DISPLAY environment variable set
+correctly, otherwise the test will fail.

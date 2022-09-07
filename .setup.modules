@@ -1,0 +1,13 @@
+#
+# Module setup
+#
+# To be used only on the education cluster and similar clusters
+#
+
+# Load modules
+module add vcs/2016.06
+module add verdi/2016.06
+
+# aliases used during the workshop
+alias xterm "xterm -sb -sl 2000"
+
