@@ -7,8 +7,7 @@ program automatic test(router_io.TB rtr_io);
   //
   //Add a global declaration for queue used to store sampled data
   //ToDo
-
-  int run_for_n_packets = 0;
+  logic[7:0] pkt2cmp_payload[$]; // actual packet data array
 
   initial begin
     
@@ -16,7 +15,7 @@ program automatic test(router_io.TB rtr_io);
     //
     //Send 2000 packets
     //ToDo Caution!! Do only in Task 6
-	run_for_n_packets = 21;
+	run_for_n_packets = 2000;
   	reset();
 	repeat(run_for_n_packets) begin
 
@@ -27,7 +26,11 @@ program automatic test(router_io.TB rtr_io);
       //Execute receive routine recv() concurrently with send()
 	  //followed by self-checking routine check()
       //ToDo
-	  send();
+    fork
+      send();
+      recv();
+    join
+	  check();
     
 	end
 	repeat(10) @rtr_io.cb;
@@ -49,8 +52,8 @@ program automatic test(router_io.TB rtr_io);
     //
     //Randomly generate sa and da
     //ToDo Caution!! Do only in Task 6
-	sa = 3;
-	da = 7;
+	sa = $urandom;
+	da = $urandom;
 	payload.delete(); //clear previous data
 	repeat($urandom_range(4,2))
 	  payload.push_back($urandom);
@@ -100,21 +103,26 @@ program automatic test(router_io.TB rtr_io);
   //
   //Declare the recv() task
   //ToDo
+  task recv();
 
     //Lab 3 - Task 3, Step 2
     //
     //In recv() task call get_payload() to retrieve payload
     //ToDo
+    get_payload();
+  endtask: recv
 
   //Lab 3 - Task 3, Step 3
   //
   //Declare the get_payload() task
   //ToDo
+  task get_payload();
 
     //Lab 3 - Task 3, Step 4
     //
     //In get_payload() delete content of pkt2cmp_payload[$]
     //ToDo
+    pkt2cmp_payload.delete();
 
     //Lab 3 - Task 3, Step 5
     //
@@ -124,6 +132,23 @@ program automatic test(router_io.TB rtr_io);
 	//Refer to class slides for the suggested code.
 	//Implement a watchdog timer of 1000 clocks
     //ToDo
+    fork
+      begin: wd_timer_fork
+      fork: frameo_wd_timer
+        begin
+        wait(rtr_io.cb.frameo_n[da] != 0);
+        @(rtr_io.cb iff(rtr_io.cb.frameo_n[da] == 0)); // iff中的语句为真时，事件才会触发
+        end
+
+        begin // this is another thread
+          repeat(1000) @rtr_io.cb;
+          $display("\n%m\n[ERROR]%t Frame signal timed out!\n", $realtime);
+          $finish;
+        end
+      join_any: frameo_wd_timer
+      disable fork; // 关闭超时线程
+      end: wd_timer_fork
+    join
 
     //Lab 3 - Task 3, Step 6
     //
@@ -132,17 +157,37 @@ program automatic test(router_io.TB rtr_io);
     //Within the loop, assemble a byte of data at a time(8 clocks)
     //Store each byte in pkt2cmp_payload[$]
     //ToDo
+    forever begin
+      logic[7:0] datum;
+      for (int i = 0; i < 8; i = i) begin
+        if (!rtr_io.cb.valido_n[da])
+          datum[i++] = rtr_io.cb.dout[da];
+        if (rtr_io.cb.frameo_n[da])
+          if (i == 8) begin
+            pkt2cmp_payload.push_back(datum);
+            return;
+          end
 
           //Lab 3 - Task 3, Step 7
           //
           //If payload is not byte aligned, print message and end simulation
           //ToDo
+          else begin
+            $display("\n%m\n[ERROR]%t Packet payload not byte aligned!\n", $realtime);
+            $finish;
+          end
+        @(rtr_io.cb);
+      end
+      pkt2cmp_payload.push_back(datum);
+    end
+  endtask: get_payload
 
   //Lab 3 - Task 4, Step 1
   //
   //Create function compare() which returns single bit
   //and has pass-by-reference string argument
   //ToDo
+  function bit compare(ref string message);
 
     //Lab 3 - Task 4, Step 2
     //
@@ -157,17 +202,35 @@ program automatic test(router_io.TB rtr_io);
     //   set string argument with description of error
     //   terminate subroutine by returning a 0
     //ToDo
+    if (payload.size() != pkt2cmp_payload.size()) begin
+      message = "Payload Size Mismatch:\n";
+      message = { message, $sformatf("payload.size() = %0d, pkt2cmp_payload.size() = %0d\n", payload.size(), pkt2cmp_payload.size()) };
+      return(0);
+    end
+    if (payload == pkt2cmp_payload) begin
+      message = "Successfully Compared\n";
+      return(1);
+    end
+    else begin
+      message = "Payload Content Mismatch:\n";
+      message = { message, $sformatf("Packet Sent: %p\n Packet Received: %p\n", payload, pkt2cmp_payload) };
+      return(0);
+    end
+  endfunction: compare
 
   //Lab 3 - Task 4, Step 3
   //
   //Create function called check()
   //ToDo
+  function check();
 
     //Lab 3 - Task 4, Step 4
     //
     //In check() declare a string variable message
     //keep a count of packets checked with variable pkts_checked
     //ToDo
+    string message;
+    static int pkts_checked = 0;
 
     //Lab 3 - Task 4, Step 4
     //
@@ -175,5 +238,11 @@ program automatic test(router_io.TB rtr_io);
     //If error detected print error message and end simulation
     //If successful print message indicating number of packets checked
     //ToDo
+    if (!compare(message)) begin
+      $display("\n%m\n[ERROR]%t Packet #%0d %s\n", $realtime, pkts_checked, message);
+      $finish;
+    end
+    $display("[NOTE]%t Packet #%0d %s", $realtime, pkts_checked++, message);
+  endfunction: check
 
 endprogram: test
