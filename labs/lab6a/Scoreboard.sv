@@ -12,6 +12,7 @@ class Scoreboard;
   //Lab6 Task 2 Step 2
   //Define two new 4-bit class properties sa, da
   //ToDo
+  bit[3:0] sa, da; // functional coverage properties
 
 
   //Lab6 Task 2 Steps 3,4
@@ -19,6 +20,11 @@ class Scoreboard;
   //Inside the covergroup define coverpoints for sa and da
   //Inside the covergroup define a cross of the coverpoints for sa and da
   //ToDo
+  covergroup router_cov;
+    coverpoint sa;
+    coverpoint da;
+    cross sa, da;
+  endgroup
 
 
   extern function new(string name = "Scoreboard", pkt_mbox driver_mbox = null, receiver_mbox = null);
@@ -39,6 +45,7 @@ function Scoreboard::new(string name, pkt_mbox driver_mbox, receiver_mbox);
   //Construct the covergroup router_cov
   //Note the instance name is same as covergroup name
   //ToDo
+  router_cov = new();
 
 endfunction: new
 
@@ -66,6 +73,7 @@ function void Scoreboard::check();
   //Lab6 Task 4 Step 1
   //Define a real variable coverage_result to store coverage numbers
   //ToDo
+  real coverage_result = 0.0;
 
   if (TRACE_ON) $display("[TRACE]%0t %s:%m", $time, name);
   index = refPkt.find_first_index() with (item.da == pkt2cmp.da);
@@ -87,28 +95,32 @@ function void Scoreboard::check();
   //Lab6 Task 4 Step 2
   //Set the class sa and da variables to match the ones in pkt2send
   //ToDo
+  this.sa = pkt2send.sa;
+  this.da = pkt2send.da;
 
 
   //Lab6 Task 4 Step 3
   //Update the covergroup bins with sample()
   //ToDo
+  router_cov.sample();
 
 
   //Lab6 Task 4 Step 4
   //update the coverage_result value with a call to $get_coverage()
   //ToDo
+  coverage_result = $get_coverage();
 
 
   //Lab6 Task 4 Step 5
   //Add coverage value to display statement
   //ToDo
-  $display("[NOTE]%0t Packet #%0d %s", $time, pkts_checked++, message);
+  $display("[NOTE]%0t Packet #%0d %s Cvrg = %3.2f", $time, pkts_checked++, message, coverage_result);
 
 
   //Lab6 Task 4 Step 6
   //Modify if to add check for 100% coverage
   //ToDo
-  if ((pkts_checked >= run_for_n_packets))
+  if ((pkts_checked >= run_for_n_packets) || ( coverage_result == 100.0))
     ->DONE;
 endfunction: check
 `endif

@@ -22,7 +22,7 @@ run:
 	urg -dir simv.vdb -format text
 
 compile:
-	vcs -l vcs.log -sverilog -kdb -debug_access+all $(COV_OPTS) $(TSCALE) $(SVTB) $(RTL) +vcs+vcdpluson -lca
+	vcs -full64 -l vcs.log -sverilog -kdb -debug_access+all $(COV_OPTS) $(TSCALE) $(SVTB) $(RTL) +vcs+vcdpluson -lca
 
 verdi:
 	verdi -play ${verdi_cmd_file} &
