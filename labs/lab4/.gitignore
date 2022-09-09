@@ -1,0 +1,11 @@
+# csrc
+# DVEfiles
+# simv.daidir
+# verdiLog
+
+*
+!.gitignore
+!Makefile
+!*.sv
+!top_io.cmd
+!top_io.tcl
