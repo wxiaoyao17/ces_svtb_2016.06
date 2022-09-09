@@ -18,7 +18,7 @@ run:
 	./simv -l simv.log +ntb_random_seed=$(seed)
 
 compile:
-	vcs -l vcs.log -sverilog -kdb -debug_access+all $(SVTB) $(RTL) +vcs+vcdpluson -lca
+	vcs -full64 -l vcs.log -sverilog -kdb -debug_access+all $(SVTB) $(RTL) +vcs+vcdpluson -lca
 
 verdi:
 	verdi -play ${verdi_cmd_file}
