@@ -1,0 +1,12 @@
+# csrc
+# DVEfiles
+# simv.daidir
+# verdiLog
+
+*
+!.gitignore
+!Makefile
+!*.sv
+!router_test.h
+!top_io.cmd
+!top_io.tcl
